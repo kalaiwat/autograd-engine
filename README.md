@@ -11,18 +11,6 @@ gradient of every node it reaches, seeds the root with `grad = 1.0`, then replay
 order in reverse, each closure accumulating into its operands with `+=` — so a node
 used more than once sums the contributions from every path it appears on.
 
-**Implemented today:** `operator+` and `operator*`, forward and backward, plus the
-graph walk and gradient accumulation they run on. `operator-` and `operator/` are
-declared in `value.h` but are not differentiable yet — `operator/` has no definition,
-and `operator-` routes its right-hand side through a detached constant, so no gradient
-reaches it.
-
-**Deliberately out of scope.** This is a scoped project, not a framework. There are no
-tensors — every node is a single scalar, so there are no shapes, no broadcasting, and
-no matmul. There is no GPU or CUDA path, and no convolutions. There are no layers,
-optimizers, or training loop. Tensors and a matmul benchmark are planned later stages;
-the rest of that list stays out on purpose.
-
 ## Build and test
 
 _TODO: the CMake configure/build/ctest invocations, and what the Debug (sanitizer) and Release configurations each cover._
