@@ -7,9 +7,13 @@
 #include <unordered_set>
 
 class Value {
+    // shared_ptr keeps operands alive for backward(), even after the
+    // expression that built them goes out of scope.
     std::vector<std::shared_ptr<Value>> operands;
     std::function<void()> backward_fn;
 
+    // Raw Value* here: traversal doesn't need to extend lifetime, only
+    // the operands vector above does.
     static void build_topology(
         Value* node,
         std::unordered_set<Value*>& visited,
