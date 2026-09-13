@@ -1,4 +1,5 @@
 #include "value.h"
+#include <cmath>
 
 void Value::backward() {
     std::vector<Value*> topology;
@@ -62,7 +63,8 @@ std::shared_ptr<Value> operator-(
     const std::shared_ptr<Value>& lhs,
     const std::shared_ptr<Value>& rhs
 ) {
-    const auto negated_rhs = std::make_shared<Value>(-rhs->data);
+    const auto negative = std::make_shared<Value>(-1.0);
+    const auto negated_rhs = rhs * negative;
     return lhs + negated_rhs;
 }
 
@@ -78,6 +80,25 @@ std::shared_ptr<Value> operator*(
     result_node->backward_fn = [self = result_node.get()]() {
         self->operands[0]->grad += (self->grad * self->operands[1]->data);
         self->operands[1]->grad += (self->grad * self->operands[0]->data);
+    };
+
+    return result_node;
+}
+
+std::shared_ptr<Value> operator/(
+    const std::shared_ptr<Value>& lhs,
+    const std::shared_ptr<Value>& rhs
+) {
+    const double result = lhs->data / rhs->data;
+    auto result_node = std::make_shared<Value>(result);
+
+    result_node->operands.push_back(lhs);
+    result_node->operands.push_back(rhs);
+    result_node->backward_fn = [self = result_node.get()]() {
+        self->operands[0]->grad += (self->grad * (1 / self->operands[1]->data));
+        self->operands[1]->grad += (self->grad * (
+            (-self->operands[0]->data) / pow(self->operands[1]->data, 2)
+        ));
     };
 
     return result_node;
