@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include "autograd/value.h"
 #include <memory>
+#include <cmath>
 
 TEST_CASE("leaf value initializes data and zeroes gradient") {
     const auto x = std::make_shared<Value>(1.0);
